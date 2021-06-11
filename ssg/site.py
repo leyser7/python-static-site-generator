@@ -1,11 +1,15 @@
 from pathlib import Path
+import sys
 
 class Site:
     def __init__(self, source, dest, parsers=None):
         self.parsers = parsers or []
         self.source = Path(source)  
         self.dest = Path(dest) 
-
+    
+    @staticmethod 
+    def error(message):
+        sys.stderr.write("\x1b[1;31m{}\n".format(message))
     def create_dir(self, path):
         directory = self.dest / path.relative_to(self.source)
         directory.mkdir(directory, parents= True, exist_ok =True)
@@ -28,4 +32,4 @@ class Site:
         if parser is not None:
             parser.parse(path, self.source, self.dest)
         else:
-            print("Not Implemented")
+            self.error("No parser for the {} extension, file skipped!".format(path.suffix))
